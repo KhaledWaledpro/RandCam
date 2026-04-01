@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RandCam - تواصل بلا حدود</title>
+    
     <meta name="description" content="RandCam هو أفضل موقع للدردشة العشوائية ومحادثات الفيديو المباشرة. قابل أشخاصاً جدد وتواصل بالصوت والصورة بكل سهولة، مجاناً وبدون تسجيل.">
-    <meta name="keywords" content="شات عشوائي, دردشة فيديو, أوميجل, تعارف عشوائي, فيديو شات, محادثة مباشرة, RandCam">
+    <meta name="keywords" content="شات عشوائي, دردشة فيديو, أوميجل, تعارف عشوائي, فيديو شات, محادثة مباشرة, RandCam, random video chat">
+    
     <style>
-        /* الألوان الأساسية والتنسيق العام */
         :root {
             --primary-blue: #0056b3;
             --light-blue: #00d2ff;
@@ -29,7 +30,6 @@
             align-items: center;
         }
 
-        /* الهيدر (العنوان) */
         header {
             margin-top: 20px;
             text-align: center;
@@ -49,69 +49,56 @@
             margin-top: 5px;
             font-weight: bold;
             background: #e9f5ff;
-            padding: 5px 15px;
+            padding: 5px 25px;
             border-radius: 20px;
             display: inline-block;
             border: 1px solid var(--light-blue);
         }
 
-        /* الحاوية الرئيسية (الكاميرات + الشات) */
         .main-container {
             display: flex;
-            gap: 30px;
+            gap: 20px;
             margin-top: 30px;
-            width: 90%;
+            width: 95%;
             max-width: 1200px;
             animation: fadeIn 1s ease-in-out;
         }
 
-        /* قسم الكاميرات */
         .video-section {
             flex: 2;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
         }
 
         .video-wrapper {
             background: var(--panel-bg);
-            padding: 15px;
+            padding: 10px;
             border-radius: 20px;
             box-shadow: var(--shadow);
             position: relative;
-            transition: transform 0.3s ease;
-        }
-
-        .video-wrapper:hover {
-            transform: translateY(-5px);
         }
 
         video {
             width: 100%;
-            height: 300px;
-            background-color: #eef2f5;
+            height: 320px;
+            background-color: #000;
             border-radius: 15px;
             object-fit: cover;
-            border: 2px solid transparent;
         }
-
-        #localVideo { border-color: rgba(0, 86, 179, 0.2); }
-        #remoteVideo { border-color: rgba(0, 210, 255, 0.5); }
 
         .video-label {
             position: absolute;
-            bottom: 25px;
-            right: 25px;
-            background: rgba(255, 255, 255, 0.85);
-            padding: 5px 15px;
-            border-radius: 10px;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 4px 12px;
+            border-radius: 8px;
             font-weight: bold;
             color: var(--primary-blue);
-            backdrop-filter: blur(5px);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            backdrop-filter: blur(4px);
         }
 
-        /* قسم الشات */
         .chat-section {
             flex: 1;
             background: var(--panel-bg);
@@ -129,7 +116,6 @@
             padding: 15px;
             text-align: center;
             font-weight: bold;
-            font-size: 1.2rem;
         }
 
         .chat-messages {
@@ -139,37 +125,24 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            height: 400px;
+            height: 450px;
             background: #fbfdff;
         }
 
         .msg {
-            max-width: 80%;
-            padding: 10px 15px;
-            border-radius: 15px;
+            max-width: 85%;
+            padding: 8px 12px;
+            border-radius: 12px;
             font-size: 0.95rem;
-            line-height: 1.4;
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: popIn 0.3s ease;
         }
 
-        .msg.local {
-            align-self: flex-start;
-            background: var(--primary-blue);
-            color: white;
-            border-bottom-right-radius: 2px;
-        }
-
-        .msg.remote {
-            align-self: flex-end;
-            background: #e9ecef;
-            color: var(--text-dark);
-            border-bottom-left-radius: 2px;
-        }
+        .msg.local { align-self: flex-start; background: var(--primary-blue); color: white; }
+        .msg.remote { align-self: flex-end; background: #e9ecef; color: var(--text-dark); }
 
         .chat-input-area {
             display: flex;
             padding: 15px;
-            background: white;
             border-top: 1px solid #eee;
         }
 
@@ -179,12 +152,6 @@
             border: 1px solid #ddd;
             border-radius: 20px;
             outline: none;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-
-        #chatInput:focus {
-            border-color: var(--light-blue);
         }
 
         #sendBtn {
@@ -196,77 +163,33 @@
             height: 40px;
             margin-right: 10px;
             cursor: pointer;
-            font-size: 1.2rem;
-            transition: transform 0.2s, background 0.2s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
 
-        #sendBtn:hover {
-            transform: scale(1.1);
-            background: var(--primary-blue);
-        }
-
-        /* أزرار التحكم */
-        .controls {
-            margin: 30px 0;
-            display: flex;
-            gap: 20px;
-        }
+        .controls { margin: 25px 0; display: flex; gap: 15px; }
 
         .control-btn {
-            padding: 12px 30px;
-            font-size: 1.1rem;
+            padding: 12px 35px;
+            font-size: 1rem;
             font-weight: bold;
             border: none;
             border-radius: 25px;
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: 0.3s;
         }
 
-        #nextBtn {
-            background: linear-gradient(90deg, var(--primary-blue), var(--light-blue));
-            color: white;
-        }
+        #nextBtn { background: linear-gradient(90deg, var(--primary-blue), var(--light-blue)); color: white; }
+        #stopBtn { background: white; color: #dc3545; border: 1px solid #dc3545; }
 
-        #nextBtn:hover {
-            box-shadow: 0 6px 20px rgba(0, 210, 255, 0.4);
-            transform: translateY(-2px);
-        }
-
-        #stopBtn {
-            background: white;
-            color: #dc3545;
-            border: 1px solid #dc3545;
-        }
-
-        #stopBtn:hover {
-            background: #dc3545;
-            color: white;
-        }
-
-        /* الأنيميشن */
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes popIn {
-            from { opacity: 0; transform: scale(0.8); }
-            to { opacity: 1; transform: scale(1); }
-        }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
 
     <header>
         <h1>RandCam</h1>
-        <div id="status">جاري تشغيل الأنظمة والاتصال بالسيرفر...</div>
+        <div id="status">جاري الاتصال...</div>
     </header>
 
     <div class="main-container">
@@ -283,18 +206,17 @@
 
         <div class="chat-section">
             <div class="chat-header">دردشة مباشرة</div>
-            <div class="chat-messages" id="chatMessages">
-                </div>
+            <div class="chat-messages" id="chatMessages"></div>
             <div class="chat-input-area">
-                <input type="text" id="chatInput" placeholder="اكتب رسالتك هنا..." onkeypress="handleKeyPress(event)">
+                <input type="text" id="chatInput" placeholder="اكتب هنا..." onkeypress="if(event.key==='Enter') sendMessage()">
                 <button id="sendBtn" onclick="sendMessage()">➤</button>
             </div>
         </div>
     </div>
 
     <div class="controls">
-        <button class="control-btn" id="nextBtn" onclick="location.reload()">تخطي / اتصال جديد ⏭️</button>
-        <button class="control-btn" id="stopBtn" onclick="stopEverything()">إيقاف الكاميرا ⏹️</button>
+        <button class="control-btn" id="nextBtn" onclick="location.reload()">تخطي ⏭️</button>
+        <button class="control-btn" id="stopBtn" onclick="stopEverything()">إيقاف ⏹️</button>
     </div>
 
     <script>
@@ -304,42 +226,22 @@
         const chatMessages = document.getElementById('chatMessages');
         const chatInput = document.getElementById('chatInput');
 
-        let localStream;
-        let peerConnection;
-        let iceCandidateQueue = []; // طابور انتظار لبيانات الفيديو
-        
-        // التحديث الجديد: سيرفرات STUN سريعة + سيرفرات TURN + تريكة التجهيز المسبق (10 مسارات)
+        let localStream, peerConnection, iceCandidateQueue = [];
+
         const config = {
             'iceCandidatePoolSize': 10,
             'iceServers': [
                 {'urls': 'stun:stun.cloudflare.com:3478'},
                 {'urls': 'stun:stun.l.google.com:19302'},
-                {'urls': 'stun:stun1.l.google.com:19302'},
-                {'urls': 'stun:stun2.l.google.com:19302'},
-                {
-                    'urls': 'turn:openrelay.metered.ca:80',
-                    'username': 'openrelayproject',
-                    'credential': 'openrelayproject'
-                },
-                {
-                    'urls': 'turn:openrelay.metered.ca:443',
-                    'username': 'openrelayproject',
-                    'credential': 'openrelayproject'
-                },
-                {
-                    'urls': 'turn:openrelay.metered.ca:443?transport=tcp',
-                    'username': 'openrelayproject',
-                    'credential': 'openrelayproject'
-                }
+                {'urls': 'turn:openrelay.metered.ca:80', 'username': 'openrelayproject', 'credential': 'openrelayproject'},
+                {'urls': 'turn:openrelay.metered.ca:443', 'username': 'openrelayproject', 'credential': 'openrelayproject'}
             ]
         };
 
-        // دمج اللينك بتاعك الخاص بالباك إند مباشرة هنا
-        const ws = new WebSocket("wss://khalidwalidabdelnaseer22-randcam.hf.space/ws"); 
+        const ws = new WebSocket("wss://khalidwalidabdelnaseer22-randcam.hf.space/ws");
 
         ws.onopen = () => {
-            statusText.innerText = "متصل بالسيرفر! بنفتح الكاميرا...";
-            statusText.style.color = "var(--primary-blue)";
+            statusText.innerText = "متصل! نفتح الكاميرا...";
             startCamera();
         };
 
@@ -347,47 +249,33 @@
             try {
                 localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                 localVideo.srcObject = localStream;
-            } catch (error) {
-                statusText.innerText = "⚠️ يرجى السماح باستخدام الكاميرا والميكروفون";
-                statusText.style.color = "red";
-                console.error("Camera error:", error);
+            } catch (e) {
+                statusText.innerText = "⚠️ افتح الكاميرا من فضلك";
             }
         }
 
         ws.onmessage = async (event) => {
             const data = JSON.parse(event.data);
-
-            if (data.type === 'status') {
-                statusText.innerText = data.message;
-            } 
-            else if (data.type === 'chat') {
-                appendMessage(data.text, 'remote');
-            }
-            else if (data.type === 'peer_disconnected') {
-                if (peerConnection) peerConnection.close();
-                remoteVideo.srcObject = null;
-                statusText.innerText = "الطرف الآخر غادر المحادثة.";
-                appendMessage("انتهت المحادثة.", 'remote');
-                iceCandidateQueue = []; // تفريغ الطابور
-            }
+            if (data.type === 'status') statusText.innerText = data.message;
+            else if (data.type === 'chat') appendMessage(data.text, 'remote');
             else if (data.type === 'init_webrtc') {
                 createPeerConnection();
                 const offer = await peerConnection.createOffer();
                 await peerConnection.setLocalDescription(offer);
                 ws.send(JSON.stringify({ type: 'offer', offer: offer }));
-            } 
+            }
             else if (data.type === 'offer') {
                 createPeerConnection();
                 await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
                 const answer = await peerConnection.createAnswer();
                 await peerConnection.setLocalDescription(answer);
                 ws.send(JSON.stringify({ type: 'answer', answer: answer }));
-                processIceQueue(); // تشغيل البيانات المنتظرة
-            } 
+                processIceQueue();
+            }
             else if (data.type === 'answer') {
                 await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
-                processIceQueue(); // تشغيل البيانات المنتظرة
-            } 
+                processIceQueue();
+            }
             else if (data.type === 'ice-candidate') {
                 if (peerConnection && peerConnection.remoteDescription) {
                     await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
@@ -395,41 +283,36 @@
                     iceCandidateQueue.push(data.candidate);
                 }
             }
+            else if (data.type === 'peer_disconnected') {
+                if (peerConnection) peerConnection.close();
+                remoteVideo.srcObject = null;
+                statusText.innerText = "الطرف الآخر غادر.";
+            }
         };
 
-        async function processIceQueue() {
+        function processIceQueue() {
             while (iceCandidateQueue.length > 0) {
-                let candidate = iceCandidateQueue.shift();
-                try {
-                    await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-                } catch (e) {
-                    console.error("Error adding ice candidate", e);
-                }
+                peerConnection.addIceCandidate(new RTCIceCandidate(iceCandidateQueue.shift()));
             }
         }
 
         function createPeerConnection() {
             peerConnection = new RTCPeerConnection(config);
-
-            localStream.getTracks().forEach(track => {
-                peerConnection.addTrack(track, localStream);
-            });
-
-            // التحديث الجديد: إجبار التشغيل فور وصول أول فريم لتقليل التأخير
+            localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+            
             peerConnection.ontrack = (event) => {
                 if (remoteVideo.srcObject !== event.streams[0]) {
                     remoteVideo.srcObject = event.streams[0];
-                    
-                    remoteVideo.onloadedmetadata = () => {
-                        remoteVideo.play().catch(e => console.log("مشكلة تشغيل تلقائي:", e));
-                    };
+                    remoteVideo.play().catch(() => {});
                 }
             };
 
             peerConnection.onicecandidate = (event) => {
-                if (event.candidate) {
-                    ws.send(JSON.stringify({ type: 'ice-candidate', candidate: event.candidate }));
-                }
+                if (event.candidate) ws.send(JSON.stringify({ type: 'ice-candidate', candidate: event.candidate }));
+            };
+
+            peerConnection.oniceconnectionstatechange = () => {
+                if(peerConnection.iceConnectionState === 'connected') statusText.innerText = "متصل الآن! ✅";
             };
         }
 
@@ -442,10 +325,6 @@
             }
         }
 
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') sendMessage();
-        }
-
         function appendMessage(text, sender) {
             const msgDiv = document.createElement('div');
             msgDiv.classList.add('msg', sender);
@@ -455,12 +334,9 @@
         }
 
         function stopEverything() {
-            if (localStream) localStream.getTracks().forEach(track => track.stop());
-            if (peerConnection) peerConnection.close();
+            if (localStream) localStream.getTracks().forEach(t => t.stop());
             ws.close();
-            localVideo.srcObject = null;
-            remoteVideo.srcObject = null;
-            statusText.innerText = "تم إيقاف الكاميرا والاتصال.";
+            statusText.innerText = "تم الإيقاف.";
         }
     </script>
 </body>
