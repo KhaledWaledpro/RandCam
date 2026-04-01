@@ -4,14 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RandCam - تواصل بلا حدود</title>
-    <meta name="description" content="RandCam هو أفضل موقع للدردشة العشوائية ومحادثات الفيديو المباشرة. قابل أشخاصاً جدد وتواصل بالصوت والصورة بكل سهولة، مجاناً وبدون تسجيل. البديل الأسرع لأوميجل.">
-
-    <meta name="keywords" content="شات عشوائي, دردشة فيديو, أوميجل, تعارف عشوائي, فيديو شات, محادثة مباشرة, RandCam, random video chat, omegle alternative, random cam, live chat">
-
-    <meta property="og:title" content="RandCam - دردشة فيديو عشوائية">
-    <meta property="og:description" content="ادخل دلوقتي وقابل ناس جديدة عشوائياً بالصوت والصورة في ثواني، بدون تسجيل!">
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="RandCam">
+    <meta name="description" content="RandCam هو أفضل موقع للدردشة العشوائية ومحادثات الفيديو المباشرة. قابل أشخاصاً جدد وتواصل بالصوت والصورة بكل سهولة، مجاناً وبدون تسجيل.">
+    <meta name="keywords" content="شات عشوائي, دردشة فيديو, أوميجل, تعارف عشوائي, فيديو شات, محادثة مباشرة, RandCam">
     <style>
         /* الألوان الأساسية والتنسيق العام */
         :root {
@@ -314,15 +308,33 @@
         let peerConnection;
         let iceCandidateQueue = []; // طابور انتظار لبيانات الفيديو
         
-        // سيرفرات جوجل المجانية
+        // التحديث الجديد: سيرفرات STUN سريعة + سيرفرات TURN + تريكة التجهيز المسبق (10 مسارات)
         const config = {
+            'iceCandidatePoolSize': 10,
             'iceServers': [
+                {'urls': 'stun:stun.cloudflare.com:3478'},
                 {'urls': 'stun:stun.l.google.com:19302'},
-                {'urls': 'stun:stun1.l.google.com:19302'}
+                {'urls': 'stun:stun1.l.google.com:19302'},
+                {'urls': 'stun:stun2.l.google.com:19302'},
+                {
+                    'urls': 'turn:openrelay.metered.ca:80',
+                    'username': 'openrelayproject',
+                    'credential': 'openrelayproject'
+                },
+                {
+                    'urls': 'turn:openrelay.metered.ca:443',
+                    'username': 'openrelayproject',
+                    'credential': 'openrelayproject'
+                },
+                {
+                    'urls': 'turn:openrelay.metered.ca:443?transport=tcp',
+                    'username': 'openrelayproject',
+                    'credential': 'openrelayproject'
+                }
             ]
         };
 
-        // ⚠️ حط لينك السيرفر بتاعك هنا بدل الجملة دي ⚠️
+        // دمج اللينك بتاعك الخاص بالباك إند مباشرة هنا
         const ws = new WebSocket("wss://khalidwalidabdelnaseer22-randcam.hf.space/ws"); 
 
         ws.onopen = () => {
@@ -403,11 +415,14 @@
                 peerConnection.addTrack(track, localStream);
             });
 
+            // التحديث الجديد: إجبار التشغيل فور وصول أول فريم لتقليل التأخير
             peerConnection.ontrack = (event) => {
                 if (remoteVideo.srcObject !== event.streams[0]) {
                     remoteVideo.srcObject = event.streams[0];
-                    // إجبار المتصفح على التشغيل
-                    remoteVideo.play().catch(e => console.log("مشكلة في التشغيل التلقائي:", e));
+                    
+                    remoteVideo.onloadedmetadata = () => {
+                        remoteVideo.play().catch(e => console.log("مشكلة تشغيل تلقائي:", e));
+                    };
                 }
             };
 
