@@ -1,8 +1,4 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+="viewport" content="width=device-width, initial-scale=1.0">
     <title>RandCam - تواصل بلا حدود</title>
     <style>
         /* الألوان الأساسية والتنسيق العام */
@@ -296,7 +292,6 @@
     </div>
 
     <script>
-        // تعريف المتغيرات الأساسية
         const localVideo = document.getElementById('localVideo');
         const remoteVideo = document.getElementById('remoteVideo');
         const statusText = document.getElementById('status');
@@ -305,14 +300,18 @@
 
         let localStream;
         let peerConnection;
+        let iceCandidateQueue = []; // طابور انتظار لبيانات الفيديو
         
-        // إعدادات خوادم STUN من جوجل
+        // سيرفرات جوجل المجانية
         const config = {
-            'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]
+            'iceServers': [
+                {'urls': 'stun:stun.l.google.com:19302'},
+                {'urls': 'stun:stun1.l.google.com:19302'}
+            ]
         };
 
-        // الاتصال بالباك إند
-        const ws = new WebSocket("wss://khalidwalidabdelnaseer22-randcam.hf.space/ws");
+        // حط لينك السيرفر بتاعك هنا
+        const ws = new WebSocket("wss://khalidwalidabdelnaseer22-randcam.hf.space/ws"); 
 
         ws.onopen = () => {
             statusText.innerText = "متصل بالسيرفر! بنفتح الكاميرا...";
@@ -320,7 +319,6 @@
             startCamera();
         };
 
-        // دالة فتح الكاميرا والمايك
         async function startCamera() {
             try {
                 localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
@@ -332,7 +330,6 @@
             }
         }
 
-        // استقبال البيانات من السيرفر (سواء إعدادات فيديو أو رسائل شات)
         ws.onmessage = async (event) => {
             const data = JSON.parse(event.data);
 
@@ -340,7 +337,6 @@
                 statusText.innerText = data.message;
             } 
             else if (data.type === 'chat') {
-                // استقبلنا رسالة شات من الطرف التاني
                 appendMessage(data.text, 'remote');
             }
             else if (data.type === 'peer_disconnected') {
@@ -348,6 +344,7 @@
                 remoteVideo.srcObject = null;
                 statusText.innerText = "الطرف الآخر غادر المحادثة.";
                 appendMessage("انتهت المحادثة.", 'remote');
+                iceCandidateQueue = []; // تفريغ الطابور
             }
             else if (data.type === 'init_webrtc') {
                 createPeerConnection();
@@ -361,32 +358,50 @@
                 const answer = await peerConnection.createAnswer();
                 await peerConnection.setLocalDescription(answer);
                 ws.send(JSON.stringify({ type: 'answer', answer: answer }));
+                processIceQueue(); // تشغيل البيانات المنتظرة
             } 
             else if (data.type === 'answer') {
                 await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+                processIceQueue(); // تشغيل البيانات المنتظرة
             } 
             else if (data.type === 'ice-candidate') {
-                if (peerConnection) {
+                // لو المتصفح لسه مجهزط حط البيانات في الطابور، لو جاهز ضيفها فوراً
+                if (peerConnection && peerConnection.remoteDescription) {
                     await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+                } else {
+                    iceCandidateQueue.push(data.candidate);
                 }
             }
         };
 
-        // إنشاء اتصال الفيديو P2P
+        // دالة لمعالجة طابور بيانات الفيديو
+        async function processIceQueue() {
+            while (iceCandidateQueue.length > 0) {
+                let candidate = iceCandidateQueue.shift();
+                try {
+                    await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+                } catch (e) {
+                    console.error("Error adding ice candidate", e);
+                }
+            }
+        }
+
         function createPeerConnection() {
             peerConnection = new RTCPeerConnection(config);
 
-            // إضافة مسارات الصوت والصورة للاتصال
             localStream.getTracks().forEach(track => {
                 peerConnection.addTrack(track, localStream);
             });
 
-            // عرض فيديو الطرف الآخر
+            // أول ما فيديو الطرف التاني يوصل، اعرضه وشغله بالعافية
             peerConnection.ontrack = (event) => {
-                remoteVideo.srcObject = event.streams[0];
+                if (remoteVideo.srcObject !== event.streams[0]) {
+                    remoteVideo.srcObject = event.streams[0];
+                    // إجبار المتصفح على التشغيل
+                    remoteVideo.play().catch(e => console.log("مشكلة في التشغيل التلقائي:", e));
+                }
             };
 
-            // إرسال بيانات الاتصال للطرف الآخر عبر السيرفر
             peerConnection.onicecandidate = (event) => {
                 if (event.candidate) {
                     ws.send(JSON.stringify({ type: 'ice-candidate', candidate: event.candidate }));
@@ -394,50 +409,35 @@
             };
         }
 
-        // وظائف الشات الكتابي
         function sendMessage() {
             const text = chatInput.value.trim();
             if (text !== '') {
-                // اعرض الرسالة عندك
                 appendMessage(text, 'local');
-                // ابعتها للطرف التاني عن طريق الـ WebSocket
                 ws.send(JSON.stringify({ type: 'chat', text: text }));
-                // فضي مربع الكتابة
                 chatInput.value = '';
             }
         }
 
-        // عشان لو داس Enter يبعت الرسالة
         function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                sendMessage();
-            }
+            if (event.key === 'Enter') sendMessage();
         }
 
-        // دالة إضافة الرسالة في واجهة الشات
         function appendMessage(text, sender) {
             const msgDiv = document.createElement('div');
             msgDiv.classList.add('msg', sender);
             msgDiv.innerText = text;
             chatMessages.appendChild(msgDiv);
-            
-            // سكرول تلقائي لآخر رسالة
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        // إيقاف كل حاجة
         function stopEverything() {
-            if (localStream) {
-                localStream.getTracks().forEach(track => track.stop());
-            }
-            if (peerConnection) {
-                peerConnection.close();
-            }
+            if (localStream) localStream.getTracks().forEach(track => track.stop());
+            if (peerConnection) peerConnection.close();
             ws.close();
             localVideo.srcObject = null;
             remoteVideo.srcObject = null;
             statusText.innerText = "تم إيقاف الكاميرا والاتصال.";
-        }
+                }
     </script>
 </body>
 </html>
