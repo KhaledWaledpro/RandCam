@@ -1,4 +1,8 @@
-="viewport" content="width=device-width, initial-scale=1.0">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RandCam - تواصل بلا حدود</title>
     <style>
         /* الألوان الأساسية والتنسيق العام */
@@ -310,7 +314,7 @@
             ]
         };
 
-        // حط لينك السيرفر بتاعك هنا
+        // ⚠️ حط لينك السيرفر بتاعك هنا بدل الجملة دي ⚠️
         const ws = new WebSocket("wss://khalidwalidabdelnaseer22-randcam.hf.space/ws"); 
 
         ws.onopen = () => {
@@ -365,7 +369,6 @@
                 processIceQueue(); // تشغيل البيانات المنتظرة
             } 
             else if (data.type === 'ice-candidate') {
-                // لو المتصفح لسه مجهزط حط البيانات في الطابور، لو جاهز ضيفها فوراً
                 if (peerConnection && peerConnection.remoteDescription) {
                     await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
                 } else {
@@ -374,7 +377,6 @@
             }
         };
 
-        // دالة لمعالجة طابور بيانات الفيديو
         async function processIceQueue() {
             while (iceCandidateQueue.length > 0) {
                 let candidate = iceCandidateQueue.shift();
@@ -393,7 +395,6 @@
                 peerConnection.addTrack(track, localStream);
             });
 
-            // أول ما فيديو الطرف التاني يوصل، اعرضه وشغله بالعافية
             peerConnection.ontrack = (event) => {
                 if (remoteVideo.srcObject !== event.streams[0]) {
                     remoteVideo.srcObject = event.streams[0];
@@ -437,7 +438,7 @@
             localVideo.srcObject = null;
             remoteVideo.srcObject = null;
             statusText.innerText = "تم إيقاف الكاميرا والاتصال.";
-                }
+        }
     </script>
 </body>
 </html>
