@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RandCam - تواصل بلا حدود</title>
+    <style>
+        /* الألوان الأساسية والتنسيق العام */
+        :root {
+            --primary-blue: #0056b3;
+            --light-blue: #00d2ff;
+            --bg-white: #f8fbff;
+            --panel-bg: #ffffff;
+            --text-dark: #333333;
+            --shadow: 0 10px 30px rgba(0, 86, 179, 0.1);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-white) 0%, #e0f0ff 100%);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* الهيدر (العنوان) */
+        header {
+            margin-top: 20px;
+            text-align: center;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            color: var(--primary-blue);
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 210, 255, 0.3);
+        }
+
+        #status {
+            color: #555;
+            font-size: 1.1rem;
+            margin-top: 5px;
+            font-weight: bold;
+            background: #e9f5ff;
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            border: 1px solid var(--light-blue);
+        }
+
+        /* الحاوية الرئيسية (الكاميرات + الشات) */
+        .main-container {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+            width: 90%;
+            max-width: 1200px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* قسم الكاميرات */
+        .video-section {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .video-wrapper {
+            background: var(--panel-bg);
+            padding: 15px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .video-wrapper:hover {
+            transform: translateY(-5px);
+        }
+
+        video {
+            width: 100%;
+            height: 300px;
+            background-color: #eef2f5;
+            border-radius: 15px;
+            object-fit: cover;
+            border: 2px solid transparent;
+        }
+
+        #localVideo { border-color: rgba(0, 86, 179, 0.2); }
+        #remoteVideo { border-color: rgba(0, 210, 255, 0.5); }
+
+        .video-label {
+            position: absolute;
+            bottom: 25px;
+            right: 25px;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 5px 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            color: var(--primary-blue);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* قسم الشات */
+        .chat-section {
+            flex: 1;
+            background: var(--panel-bg);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid rgba(0, 210, 255, 0.2);
+        }
+
+        .chat-header {
+            background: linear-gradient(90deg, var(--primary-blue), var(--light-blue));
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            height: 400px;
+            background: #fbfdff;
+        }
+
+        .msg {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .msg.local {
+            align-self: flex-start;
+            background: var(--primary-blue);
+            color: white;
+            border-bottom-right-radius: 2px;
+        }
+
+        .msg.remote {
+            align-self: flex-end;
+            background: #e9ecef;
+            color: var(--text-dark);
+            border-bottom-left-radius: 2px;
+        }
+
+        .chat-input-area {
+            display: flex;
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #eee;
+        }
+
+        #chatInput {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        #chatInput:focus {
+            border-color: var(--light-blue);
+        }
+
+        #sendBtn {
+            background: var(--light-blue);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: transform 0.2s, background 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #sendBtn:hover {
+            transform: scale(1.1);
+            background: var(--primary-blue);
+        }
+
+        /* أزرار التحكم */
+        .controls {
+            margin: 30px 0;
+            display: flex;
+            gap: 20px;
+        }
+
+        .control-btn {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        #nextBtn {
+            background: linear-gradient(90deg, var(--primary-blue), var(--light-blue));
+            color: white;
+        }
+
+        #nextBtn:hover {
+            box-shadow: 0 6px 20px rgba(0, 210, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        #stopBtn {
+            background: white;
+            color: #dc3545;
+            border: 1px solid #dc3545;
+        }
+
+        #stopBtn:hover {
+            background: #dc3545;
+            color: white;
+        }
+
+        /* الأنيميشن */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>RandCam</h1>
+        <div id="status">جاري تشغيل الأنظمة والاتصال بالسيرفر...</div>
+    </header>
+
+    <div class="main-container">
+        <div class="video-section">
+            <div class="video-wrapper">
+                <video id="remoteVideo" autoplay playsinline></video>
+                <div class="video-label" style="color: var(--light-blue);">الشخص الغريب</div>
+            </div>
+            <div class="video-wrapper">
+                <video id="localVideo" autoplay muted playsinline></video>
+                <div class="video-label">أنت</div>
+            </div>
+        </div>
+
+        <div class="chat-section">
+            <div class="chat-header">دردشة مباشرة</div>
+            <div class="chat-messages" id="chatMessages">
+                </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="اكتب رسالتك هنا..." onkeypress="handleKeyPress(event)">
+                <button id="sendBtn" onclick="sendMessage()">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="control-btn" id="nextBtn" onclick="location.reload()">تخطي / اتصال جديد ⏭️</button>
+        <button class="control-btn" id="stopBtn" onclick="stopEverything()">إيقاف الكاميرا ⏹️</button>
+    </div>
+
+    <script>
+        // تعريف المتغيرات الأساسية
+        const localVideo = document.getElementById('localVideo');
+        const remoteVideo = document.getElementById('remoteVideo');
+        const statusText = document.getElementById('status');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+
+        let localStream;
+        let peerConnection;
+        
+        // إعدادات خوادم STUN من جوجل
+        const config = {
+            'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]
+        };
+
+        // الاتصال بالباك إند
+        const ws = new WebSocket("ws://localhost:8000/ws");
+
+        ws.onopen = () => {
+            statusText.innerText = "متصل بالسيرفر! بنفتح الكاميرا...";
+            statusText.style.color = "var(--primary-blue)";
+            startCamera();
+        };
+
+        // دالة فتح الكاميرا والمايك
+        async function startCamera() {
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                localVideo.srcObject = localStream;
+            } catch (error) {
+                statusText.innerText = "⚠️ يرجى السماح باستخدام الكاميرا والميكروفون";
+                statusText.style.color = "red";
+                console.error("Camera error:", error);
+            }
+        }
+
+        // استقبال البيانات من السيرفر (سواء إعدادات فيديو أو رسائل شات)
+        ws.onmessage = async (event) => {
+            const data = JSON.parse(event.data);
+
+            if (data.type === 'status') {
+                statusText.innerText = data.message;
+            } 
+            else if (data.type === 'chat') {
+                // استقبلنا رسالة شات من الطرف التاني
+                appendMessage(data.text, 'remote');
+            }
+            else if (data.type === 'peer_disconnected') {
+                if (peerConnection) peerConnection.close();
+                remoteVideo.srcObject = null;
+                statusText.innerText = "الطرف الآخر غادر المحادثة.";
+                appendMessage("انتهت المحادثة.", 'remote');
+            }
+            else if (data.type === 'init_webrtc') {
+                createPeerConnection();
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+                ws.send(JSON.stringify({ type: 'offer', offer: offer }));
+            } 
+            else if (data.type === 'offer') {
+                createPeerConnection();
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+                const answer = await peerConnection.createAnswer();
+                await peerConnection.setLocalDescription(answer);
+                ws.send(JSON.stringify({ type: 'answer', answer: answer }));
+            } 
+            else if (data.type === 'answer') {
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+            } 
+            else if (data.type === 'ice-candidate') {
+                if (peerConnection) {
+                    await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+                }
+            }
+        };
+
+        // إنشاء اتصال الفيديو P2P
+        function createPeerConnection() {
+            peerConnection = new RTCPeerConnection(config);
+
+            // إضافة مسارات الصوت والصورة للاتصال
+            localStream.getTracks().forEach(track => {
+                peerConnection.addTrack(track, localStream);
+            });
+
+            // عرض فيديو الطرف الآخر
+            peerConnection.ontrack = (event) => {
+                remoteVideo.srcObject = event.streams[0];
+            };
+
+            // إرسال بيانات الاتصال للطرف الآخر عبر السيرفر
+            peerConnection.onicecandidate = (event) => {
+                if (event.candidate) {
+                    ws.send(JSON.stringify({ type: 'ice-candidate', candidate: event.candidate }));
+                }
+            };
+        }
+
+        // وظائف الشات الكتابي
+        function sendMessage() {
+            const text = chatInput.value.trim();
+            if (text !== '') {
+                // اعرض الرسالة عندك
+                appendMessage(text, 'local');
+                // ابعتها للطرف التاني عن طريق الـ WebSocket
+                ws.send(JSON.stringify({ type: 'chat', text: text }));
+                // فضي مربع الكتابة
+                chatInput.value = '';
+            }
+        }
+
+        // عشان لو داس Enter يبعت الرسالة
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // دالة إضافة الرسالة في واجهة الشات
+        function appendMessage(text, sender) {
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('msg', sender);
+            msgDiv.innerText = text;
+            chatMessages.appendChild(msgDiv);
+            
+            // سكرول تلقائي لآخر رسالة
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // إيقاف كل حاجة
+        function stopEverything() {
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+            }
+            if (peerConnection) {
+                peerConnection.close();
+            }
+            ws.close();
+            localVideo.srcObject = null;
+            remoteVideo.srcObject = null;
+            statusText.innerText = "تم إيقاف الكاميرا والاتصال.";
+        }
+    </script>
+</body>
+</html>
